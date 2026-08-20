@@ -1,4 +1,4 @@
-import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, simulateKeyboardEvent, LINE, TRIANGLE, RECT, CIRCLE, ELLIPSE, advanceToFrame, canvasStatus } from "../../lib/test-utils.js";
+import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, simulateKeyboardEvent, SHAPE, advanceToFrame, canvasStatus } from "https://cdn.jsdelivr.net/gh/Supportive-IDE/p5js-testing-demo@latest/p5jsTestingLibrary.js";
 
 /**
  * A hacky solution to wait for p5js to load the canvas. Include in all exercise test files.
@@ -11,10 +11,10 @@ function waitForP5() {
     }
 }
 
-function boundingBoxMovement(code, keyName, xChange, yChange, beforeShape) {
+async function boundingBoxMovement(code, keyName, xChange, yChange, beforeShape) {
     // rects and ellipses
-    simulateKeyboardEvent(keyPressed, keyName.length === 1 ? keyName : "", code);
-    advanceToFrame(frameCount + 1);
+    simulateKeyboardEvent(keyPressed, keyName, code);
+    await advanceToFrame(frameCount + 1);
     for (const e of canvasStatus.errors) {
         TestResults.addFail(`In frame ${frameCount}, ${e}`);
     }
@@ -34,31 +34,31 @@ function boundingBoxMovement(code, keyName, xChange, yChange, beforeShape) {
     }
 }
 
-function rectMovement(code, keyName, xChange, yChange, beforeShape) {
+async function rectMovement(code, keyName, xChange, yChange, beforeShape) {
     const smallestX = 0;
     const biggestX = width - beforeShape.w;
     const smallestY = 0;
     const biggestY = height - beforeShape.h;
     if (beforeShape.x >= smallestX && beforeShape.x <= biggestX && beforeShape.y >= smallestY && beforeShape.y <= biggestY) {
-        boundingBoxMovement(code, keyName, xChange, yChange, beforeShape);
+        await boundingBoxMovement(code, keyName, xChange, yChange, beforeShape);
     } else {
         TestResults.addWarning(`The ${beforeShape.type} is too close to the edge to check if pressing the ${keyName} works as expected.`);
     }
 }
 
-function ellipseMovement(code, keyName, xChange, yChange, beforeShape) {
+async function ellipseMovement(code, keyName, xChange, yChange, beforeShape) {
     const smallestX = beforeShape.w / 2;
     const biggestX = width - beforeShape.w / 2;
     const smallestY = beforeShape.h / 2;
     const biggestY = height - beforeShape.h / 2;
     if (beforeShape.x >= smallestX && beforeShape.x <= biggestX && beforeShape.y >= smallestY && beforeShape.y <= biggestY) {
-        boundingBoxMovement(code, keyName, xChange, yChange, beforeShape);
+        await boundingBoxMovement(code, keyName, xChange, yChange, beforeShape);
     } else {
         TestResults.addWarning(`The ${beforeShape.type} is too close to the edge to check if pressing the ${keyName} works as expected.`);
     }
 }
 
-function triangleMovement(code, keyName, xChange, yChange, beforeShape) {
+async function triangleMovement(code, keyName, xChange, yChange, beforeShape) {
     const smallestX = 0;
     const biggestX = width;
     const smallestY = 0;
@@ -66,14 +66,15 @@ function triangleMovement(code, keyName, xChange, yChange, beforeShape) {
     if (smallestX <= Math.min(beforeShape.x1, beforeShape.x2, beforeShape.x3) + xChange && biggestX >= Math.max(beforeShape.x1, beforeShape.x2, beforeShape.x3) + xChange
         && smallestY <= Math.min(beforeShape.y1, beforeShape.y2, beforeShape.y3) + yChange && biggestY >= Math.max(beforeShape.y1, beforeShape.y2, beforeShape.y3)) {
         // Move
-        simulateKeyboardEvent(keyPressed, keyName.length === 1 ? keyName : "", code);
-        advanceToFrame(frameCount + 1);
+        // simulateKeyboardEvent(keyPressed, keyName.length === 1 ? keyName : "", code);
+        simulateKeyboardEvent(keyPressed, keyName, code);
+        await advanceToFrame(frameCount + 1);
         // Get shape
         const afterShapes = getShapes();
         if (afterShapes.length !== 1) {
             TestResults.addFail(`Expected one shape after pressing the ${keyName} key. Found ${afterShapes.length}. Did you forget to call background() in draw()?`);
         }
-        else if (afterShapes[0].type !== TRIANGLE) {
+        else if (afterShapes[0].type !== SHAPE.TRIANGLE) {
             TestResults.addFail(`When the ${keyName} key was pressed the triangle became a ${afterShapes[0].type}.`);
         }
         else {
@@ -91,7 +92,7 @@ function triangleMovement(code, keyName, xChange, yChange, beforeShape) {
     }
 }
 
-function lineMovement(code, keyName, xChange, yChange, beforeShape) {
+async function lineMovement(code, keyName, xChange, yChange, beforeShape) {
     const smallestX = 0;
     const biggestX = width;
     const smallestY = 0;
@@ -99,8 +100,8 @@ function lineMovement(code, keyName, xChange, yChange, beforeShape) {
     if (smallestX <= Math.min(beforeShape.x1, beforeShape.x2) + xChange && biggestX >= Math.max(beforeShape.x1, beforeShape.x2) + xChange
         && smallestY <= Math.min(beforeShape.y1, beforeShape.y2) + yChange && biggestY >= Math.max(beforeShape.y1, beforeShape.y2)) {
         // Move
-        simulateKeyboardEvent(keyPressed, keyName.length === 1 ? keyName : "", code);
-        advanceToFrame(frameCount + 1);
+        simulateKeyboardEvent(keyPressed, keyName, code);
+        await advanceToFrame(frameCount + 1);
         for (const e of canvasStatus.errors) {
             TestResults.addFail(`In frame ${frameCount}, ${e}`);
         }
@@ -109,7 +110,7 @@ function lineMovement(code, keyName, xChange, yChange, beforeShape) {
         if (afterShapes.length !== 1) {
             TestResults.addFail(`Expected one shape after pressing the ${keyName} key. Found ${afterShapes.length}. Did you forget to call background() in draw()?`);
         }
-        else if (afterShapes[0].type !== LINE) {
+        else if (afterShapes[0].type !== SHAPE.LINE) {
             TestResults.addFail(`When the ${keyName} key was pressed the line became a ${afterShapes[0].type}.`);
         }
         else {
@@ -127,23 +128,23 @@ function lineMovement(code, keyName, xChange, yChange, beforeShape) {
     }
 }
 
-function checkMovement(code, keyName, xChange, yChange) {
+async function checkMovement(code, keyName, xChange, yChange) {
     const beforeShapes = getShapes();
     if (beforeShapes.length !== 1) {
         TestResults.addFail(`Unable to check movement when the ${keyName} key is pressed because there are ${beforeShapes.length}. One shape was expected.`);
     } else {
         const beforeShape = beforeShapes[0];
-        if (beforeShape.type === RECT || beforeShape.type === SQUARE) {
-            rectMovement(code, keyName, xChange, yChange, beforeShape);
+        if (beforeShape.type === SHAPE.RECT || beforeShape.type === SHAPE.SQUARE) {
+            await rectMovement(code, keyName, xChange, yChange, beforeShape);
         }
-        else if (beforeShape.type === ELLIPSE || beforeShape.type === CIRCLE) {
-            ellipseMovement(code, keyName, xChange, yChange, beforeShape)
+        else if (beforeShape.type === SHAPE.ELLIPSE || beforeShape.type === SHAPE.CIRCLE) {
+            await ellipseMovement(code, keyName, xChange, yChange, beforeShape)
         }
-        else if (beforeShape.type === TRIANGLE) {
-            triangleMovement(code, keyName, xChange, yChange, beforeShape);
+        else if (beforeShape.type === SHAPE.TRIANGLE) {
+            await triangleMovement(code, keyName, xChange, yChange, beforeShape);
         }
-        else if (beforeShape.type === LINE) {
-            lineMovement(code, keyName, xChange, yChange, beforeShape);
+        else if (beforeShape.type === SHAPE.LINE) {
+            await lineMovement(code, keyName, xChange, yChange, beforeShape);
         }
     }
 }
@@ -161,15 +162,16 @@ async function runTests(canvas) {
         TestResults.addFail(`Expected 1 shape when the sketch first loads. Found ${lastShapes.length}.`);
     } else {
         try {
-            checkMovement("w".charCodeAt(0), "w", 0, -5);
-            checkMovement("s".charCodeAt(0), "s", 0, 5);
-            checkMovement("a".charCodeAt(0), "a", -5, 0);
-            checkMovement("d".charCodeAt(0), "d", 5, 0);
-            checkMovement(UP_ARROW, "UP arrow", 0, -5);
-            checkMovement(DOWN_ARROW, "DOWN arrow", 0, 5);
-            checkMovement(LEFT_ARROW, "LEFT arrow", -5, 0);
-            checkMovement(RIGHT_ARROW, "RIGHT arrow", 5, 0);
+            await checkMovement("w".charCodeAt(0), "w", 0, -5);
+            await checkMovement("s".charCodeAt(0), "s", 0, 5);
+            await checkMovement("a".charCodeAt(0), "a", -5, 0);
+            await checkMovement("d".charCodeAt(0), "d", 5, 0);
+            await checkMovement(UP_ARROW, UP_ARROW, 0, -5);
+            await checkMovement(DOWN_ARROW, DOWN_ARROW, 0, 5);
+            await checkMovement(LEFT_ARROW, LEFT_ARROW, -5, 0);
+            await checkMovement(RIGHT_ARROW, RIGHT_ARROW, 5, 0);
         } catch (e) {
+            console.log(e);
             TestResults.addFail("Unable to test shape movement. Has keyPressed() been implemented?");
         }
         // check bounds

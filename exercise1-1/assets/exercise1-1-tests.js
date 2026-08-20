@@ -1,4 +1,4 @@
-import { BACKGROUND, getShapes, advanceToFrame, TestResults, testSettingIsCalled, TestCircle, checkShapes, testShapesMatchInOrder, canvasStatus } from "../../lib/test-utils.js";
+import { BACKGROUND, getShapes, advanceToFrame, TestResults, testSettingIsCalled, TestCircle, checkShapes, testShapesMatchInOrder, canvasStatus } from "https://cdn.jsdelivr.net/gh/Supportive-IDE/p5js-testing-demo@latest/p5jsTestingLibrary.js";
 
 /**
  * A hacky solution to wait for p5js to load the canvas. Include in all exercise test files.
@@ -14,14 +14,14 @@ function waitForP5() {
 async function runTests(canvas) {
     canvas.style.pointerEvents = "none";
     const resultsDiv = document.getElementById("results");
-    if (testSettingIsCalled(BACKGROUND, false, true)) {
+    if (testSettingIsCalled(BACKGROUND.re, false, true)) {
         TestResults.addFail("<code>background()</code> should not be called in <code>draw()</code> for this exercise");
     }
     for (const e of canvasStatus.errors) {
         TestResults.addFail(`In frame ${frameCount}, ${e}`);
     }
     // 15 circles per row
-    advanceToFrame(16);
+    await advanceToFrame(16);
     for (const e of canvasStatus.errors) {
         TestResults.addFail(`In frame ${frameCount}, ${e}`);
     }
@@ -43,7 +43,7 @@ async function runTests(canvas) {
         }
     }
     // 150 circles total, screen filled.
-    advanceToFrame(150);
+    await advanceToFrame(150);
     for (const e of canvasStatus.errors) {
         TestResults.addFail(`In frame ${frameCount}, ${e}`);
     }
@@ -64,7 +64,7 @@ async function runTests(canvas) {
         }
     }
     // 151st circle should be in the same place as the first
-    advanceToFrame(151);
+    await advanceToFrame(151);
     for (const e of canvasStatus.errors) {
         TestResults.addFail(`In frame ${frameCount}, ${e}`);
     }

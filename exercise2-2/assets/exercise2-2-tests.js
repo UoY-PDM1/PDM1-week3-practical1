@@ -1,4 +1,4 @@
-import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, advanceToFrame, coloursMatch, canvasStatus } from "../../lib/test-utils.js";
+import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, advanceToFrame, coloursMatch, canvasStatus } from "https://cdn.jsdelivr.net/gh/Supportive-IDE/p5js-testing-demo@latest/p5jsTestingLibrary.js";
 
 /**
  * A hacky solution to wait for p5js to load the canvas. Include in all exercise test files.
@@ -44,7 +44,7 @@ async function runTests(canvas) {
             TestResults.addFail("No mouse event function has been implemented so unable to test colour change.");
         } else {
             eventFunc();
-            advanceToFrame(frameCount+1);
+            await advanceToFrame(frameCount+1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }

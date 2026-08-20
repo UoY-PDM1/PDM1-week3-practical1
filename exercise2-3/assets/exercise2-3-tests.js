@@ -1,4 +1,4 @@
-import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, advanceToFrame, coloursMatch, checkBackground, canvasStatus } from "../../lib/test-utils.js";
+import { TestResults, checkBackgroundIsCalledInDraw, checkCanvasSize, getShapes, advanceToFrame, coloursMatch, checkBackground, canvasStatus, simulateMousePosition } from "https://cdn.jsdelivr.net/gh/Supportive-IDE/p5js-testing-demo@latest/p5jsTestingLibrary.js";
 
 /**
  * A hacky solution to wait for p5js to load the canvas. Include in all exercise test files.
@@ -36,30 +36,34 @@ async function runTests(canvas) {
             TestResults.addFail("Although the output may look correct, the requirements call for use of the mouse event functions (rather than the <code>mouseIsPressed</code> system variable). You will need to implement at least <code>mouseDragged()</code> to complete this exercise.");
         } else {
             // The mouse is pressed on the shape
-            const coords = lastShapes[0].getLocationInMode("CENTER");
+            const coords = [lastShapes[0].x + 1, lastShapes[0].y + 1]; //lastShapes[0].getLocationInMode("CENTER");
             const beforeX1 = coords[0];//lastShapes[0].x + lastShapes[0].w / 2;
             const beforeY1 = coords[0];//lastShapes[0].y + lastShapes[0].h / 2;
-            mouseX = beforeX1;
-            mouseY = beforeY1;
-            mouseIsPressed = true;
+            // mouseX = beforeX1;
+            // mouseY = beforeY1;
+            // mouseIsPressed = true;
+            simulateMousePosition(beforeX1, beforeY1);
+            window.mock_mouseIsPressed = true;
             if (hasMousePressed) {
                 mousePressed();
             }
-            advanceToFrame(frameCount + 1);
+            await advanceToFrame(frameCount + 1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }
             // drag
-            mouseX += 5;
-            mouseY += 5;
+            // mouseX += 5;
+            // mouseY += 5;
+            simulateMousePosition(window.mock_mouseX + 5, window.mock_mouseY + 5);
             mouseDragged();
-            advanceToFrame(frameCount + 1);
+            await advanceToFrame(frameCount + 1);
             const shapesAfterDrag = getShapes();
             // drag
-            mouseX += 5;
-            mouseY += 5;
+            // mouseX += 5;
+            // mouseY += 5;
+            simulateMousePosition(window.mock_mouseX + 5, window.mock_mouseY + 5);
             mouseDragged();
-            advanceToFrame(frameCount + 1);
+            await advanceToFrame(frameCount + 1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }
@@ -81,13 +85,14 @@ async function runTests(canvas) {
                 }
             }
             // mouse released -> turns white
-            mouseIsPressed = false;
+            window.mock_mouseIsPressed = false;
             if (hasMouseReleased) {
                 mouseReleased();
             }
-            mouseX += 5;
-            mouseY += 5;
-            advanceToFrame(frameCount + 1);
+            // mouseX += 5;
+            // mouseY += 5;
+            simulateMousePosition(window.mock_mouseX + 5, window.mock_mouseY + 5);
+            await advanceToFrame(frameCount + 1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }
@@ -109,20 +114,22 @@ async function runTests(canvas) {
                 }
             }
             // Mouse dragged away from shape
-            mouseX = shapeRelease[0].x - 5;
-            mouseY = shapeRelease[0].y - 5;
-            mouseIsPressed = true;
+            // mouseX = shapeRelease[0].x - 5;
+            // mouseY = shapeRelease[0].y - 5;
+            simulateMousePosition(shapeRelease[0].x - 5, shapeRelease[0].y - 5);
+            window.mock_mouseIsPressed = true;
             if (hasMousePressed) {
                 mousePressed();
             }
-            advanceToFrame(frameCount + 1);
+            await advanceToFrame(frameCount + 1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }
-            mouseX += 10;
-            mouseY += 5;
+            // mouseX += 10;
+            // mouseY += 5;
+            simulateMousePosition(window.mock_mouseX + 10, window.mock_mouseY + 5);
             mouseDragged();
-            advanceToFrame(frameCount + 1);
+            await advanceToFrame(frameCount + 1);
             for (const e of canvasStatus.errors) {
                 TestResults.addFail(`In frame ${frameCount}, ${e}`);
             }
