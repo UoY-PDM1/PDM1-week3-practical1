@@ -55,13 +55,18 @@
                     your global variables to set its location.</p>
                     <p>Then, add the <code>keyPressed()</code> event function. The eventFunctions example from last lecture uses this 
                     function so use it as a reference if you are unsure.</p>
-                    <p>Inside <code>keyPressed()</code>, you will need to write a conditional that checks the values of <code>keyCode</code> and <code>key</code> and 
-                    moves the shape accordingly. The lineDrawingKeyboard example from lecture shows how to check <code>key</code> values. Use <code>keyCode</code> to 
-                check for the arrow keys and <code>key</code> to check for the letter keys.</p>
+                    <p>Inside <code>keyPressed()</code>, you will need to write a conditional that checks the value of <code>key</code> and 
+                    moves the shape accordingly. The lineDrawingKeyboard example from lecture shows how to check <code>key</code> values.</p>
+                    <p>The constants you can use for arrow keys are:</p>
+                    <ul>
+                        <li><code>LEFT_ARROW</code></li>
+                        <li><code>UP_ARROW</code></li>
+                        <li><code>RIGHT_ARROW</code></li>
+                        <li><code>DOWN_ARROW</code></li>
+                    </ul>
                     <p>Your conditional should have one branch for each bullet point in the list describing expected behaviour above.</p>
                     <p>Useful links in the p5.js reference:</p>
                     <ul>
-                        <li><a href="https://p5js.org/reference/p5/keyCode" target="_blank"><code>keyCode</code></a>. This page also shows how to check if an arrow key was pressed.</li>
                         <li><a href="https://p5js.org/reference/p5/key" target="_blank"><code>key</code></a></li>
                         <li><a href="https://p5js.org/reference/p5/keyPressed" target="_blank"><code>keyPressed()</code></a></li>
                     </ul>
